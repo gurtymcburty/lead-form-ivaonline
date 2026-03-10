@@ -21,7 +21,10 @@ export default function PhoneInput({
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    const timer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -32,14 +35,15 @@ export default function PhoneInput({
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div>
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           borderBottom: isFocused || value
-            ? '3px solid rgb(241, 236, 226)'
-            : '1px solid rgba(241, 236, 226, 0.2)',
+            ? '2px solid rgb(241, 236, 226)'
+            : '1px solid rgba(241, 236, 226, 0.3)',
+          paddingBottom: '4px',
           transition: 'border-color 0.2s ease',
         }}
       >
@@ -48,22 +52,24 @@ export default function PhoneInput({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '4px',
-            padding: '8px 24px 8px 0',
-            fontSize: '26px',
+            gap: '6px',
+            paddingRight: '16px',
+            fontSize: '24px',
             color: 'rgb(241, 236, 226)',
             cursor: 'pointer',
+            borderRight: '1px solid rgba(241, 236, 226, 0.2)',
+            marginRight: '12px',
           }}
         >
-          <span>🇬🇧</span>
+          <span style={{ fontSize: '20px' }}>🇬🇧</span>
           <svg
-            width="12"
-            height="12"
+            width="10"
+            height="10"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
-            style={{ color: 'rgb(241, 236, 226)' }}
+            strokeWidth="2.5"
+            style={{ color: 'rgb(200, 196, 188)' }}
           >
             <path d="M6 9l6 6 6-6" />
           </svg>
@@ -82,15 +88,21 @@ export default function PhoneInput({
             background: 'transparent',
             border: 'none',
             color: 'rgb(241, 236, 226)',
-            fontSize: '26px',
+            fontSize: '24px',
             fontWeight: 400,
             padding: '8px 0',
             fontFamily: 'Karla, sans-serif',
+            lineHeight: 1.4,
           }}
         />
       </div>
       {error && (
-        <p style={{ color: '#F87171', fontSize: '14px', marginTop: '8px' }}>
+        <p style={{
+          color: 'rgb(248, 113, 113)',
+          fontSize: '14px',
+          marginTop: '12px',
+          margin: '12px 0 0 0',
+        }}>
           {error}
         </p>
       )}

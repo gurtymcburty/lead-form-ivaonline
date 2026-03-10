@@ -28,36 +28,37 @@ export default function ImageChoiceCard({
           : 'rgba(241, 236, 226, 0.1) 0px 0px 0px 1px',
         border: 'none',
         borderRadius: '8px',
-        padding: '8px 8px 4px',
-        width: '153px',
-        height: '206px',
+        padding: '8px',
+        width: '140px',
         display: 'flex',
         flexDirection: 'column',
         cursor: 'pointer',
         transition: 'box-shadow 0.15s ease',
+        fontFamily: 'Karla, sans-serif',
       }}
     >
       {/* Image wrapper */}
       <div
         style={{
-          height: '158px',
-          width: '137px',
+          width: '124px',
+          height: '140px',
           overflow: 'hidden',
-          borderRadius: '2px',
+          borderRadius: '4px',
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'flex-start',
+          alignItems: 'center',
+          background: 'rgba(0,0,0,0.1)',
         }}
       >
         <Image
           src={imageSrc}
           alt={label}
-          width={137}
-          height={158}
+          width={124}
+          height={140}
           style={{
             objectFit: 'cover',
-            width: '137px',
-            height: '158px',
+            width: '100%',
+            height: '100%',
           }}
           unoptimized
         />
@@ -69,23 +70,25 @@ export default function ImageChoiceCard({
           flexDirection: 'row',
           gap: '8px',
           alignItems: 'center',
-          marginTop: '4px',
+          marginTop: '8px',
+          paddingBottom: '4px',
         }}
       >
         {/* Key badge */}
         <span
           style={{
-            background: 'rgba(38, 38, 38, 0.4)',
-            border: '1px solid rgba(241, 236, 226, 0.24)',
+            background: selected ? 'rgb(241, 236, 226)' : 'rgba(38, 38, 38, 0.4)',
+            border: selected ? 'none' : '1px solid rgba(241, 236, 226, 0.3)',
             borderRadius: '4px',
             padding: '0px 6px',
-            width: '24px',
-            height: '24px',
+            minWidth: '20px',
+            height: '20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '12px',
-            color: 'rgb(241, 236, 226)',
+            fontSize: '11px',
+            fontWeight: 400,
+            color: selected ? 'rgb(38, 38, 38)' : 'rgb(241, 236, 226)',
             flexShrink: 0,
           }}
         >
@@ -94,9 +97,10 @@ export default function ImageChoiceCard({
         {/* Label */}
         <span
           style={{
-            fontSize: '14px',
+            fontSize: '13px',
             fontWeight: 400,
             color: 'rgb(241, 236, 226)',
+            textAlign: 'left',
           }}
         >
           {label}

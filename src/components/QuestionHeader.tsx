@@ -22,42 +22,54 @@ export default function QuestionHeader({
             background: 'rgb(241, 236, 226)',
             color: 'rgb(38, 38, 38)',
             fontSize: '11px',
-            borderRadius: '5px 3px',
-            padding: '0px 4px',
-            minWidth: '16px',
-            height: '19px',
+            fontWeight: 400,
+            borderRadius: '5px 3px 3px 5px',
+            padding: '2px 6px',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            marginTop: '6px',
+            marginTop: '8px',
+            lineHeight: 1.4,
           }}
         >
           {questionNumber}
         </span>
-        {/* Question title */}
-        <h1
-          style={{
-            fontSize: '26px',
-            fontWeight: 400,
-            color: 'rgb(241, 236, 226)',
-            margin: 0,
-            lineHeight: 1.3,
-          }}
-        >
-          {title}
-          <span style={{ color: 'rgb(200, 196, 188)' }}>*</span>
-        </h1>
+        {/* Question title with arrow */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+          <span
+            style={{
+              color: 'rgb(241, 236, 226)',
+              fontSize: '20px',
+              marginTop: '2px',
+            }}
+          >
+            →
+          </span>
+          <h1
+            style={{
+              fontSize: '24px',
+              fontWeight: 400,
+              color: 'rgb(241, 236, 226)',
+              margin: 0,
+              lineHeight: 1.4,
+            }}
+          >
+            {title}
+            <span style={{ color: 'rgb(200, 196, 188)' }}>*</span>
+          </h1>
+        </div>
       </div>
       {/* Description */}
       {description && (
         <p
           style={{
-            fontSize: '18px',
+            fontSize: '16px',
             fontWeight: 400,
             color: 'rgb(200, 196, 188)',
             margin: 0,
-            marginLeft: '24px',
+            marginLeft: '54px',
+            lineHeight: 1.5,
           }}
         >
           {descriptionHasLink ? (

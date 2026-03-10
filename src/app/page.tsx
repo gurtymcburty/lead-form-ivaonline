@@ -71,7 +71,7 @@ export default function Home() {
       setCurrentStep(prev => prev + 1);
       setError('');
     }
-  }, [currentStep, totalSteps, formData, currentQuestion]);
+  }, [currentStep, totalSteps]);
 
   const handlePrev = useCallback(() => {
     if (currentStep > 0) {
@@ -82,7 +82,6 @@ export default function Home() {
 
   const handleChoiceSelect = (value: string) => {
     handleFieldChange(currentQuestion.fieldName, value);
-    // Auto-advance for choice questions (except legal)
     if (currentQuestion.type !== 'legal') {
       setTimeout(() => {
         if (currentStep < totalSteps - 1) {
@@ -96,7 +95,6 @@ export default function Home() {
   const handleSubmit = async () => {
     if (!validateCurrentStep()) return;
 
-    // Honeypot check
     if (honeypot) {
       setTimeout(() => {
         window.location.href = config.redirectUrl;
@@ -139,7 +137,7 @@ export default function Home() {
     switch (question.type) {
       case 'multiple-choice':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
@@ -150,7 +148,6 @@ export default function Home() {
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: '8px',
-                maxWidth: question.layout === 'horizontal' ? '600px' : '400px',
               }}
             >
               {question.options?.map((option) => (
@@ -163,13 +160,15 @@ export default function Home() {
                 />
               ))}
             </div>
-            <OkButton onClick={handleNext} />
+            <div>
+              <OkButton onClick={handleNext} />
+            </div>
           </div>
         );
 
       case 'image-choice':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
@@ -187,19 +186,21 @@ export default function Home() {
                 />
               ))}
             </div>
-            <OkButton onClick={handleNext} />
+            <div>
+              <OkButton onClick={handleNext} />
+            </div>
           </div>
         );
 
       case 'text':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
               description={question.description}
             />
-            <div style={{ maxWidth: '400px' }}>
+            <div style={{ maxWidth: '360px' }}>
               <TextInput
                 value={value}
                 onChange={(v) => handleFieldChange(question.fieldName, v)}
@@ -208,19 +209,21 @@ export default function Home() {
                 error={error}
               />
             </div>
-            <OkButton onClick={handleNext} />
+            <div>
+              <OkButton onClick={handleNext} />
+            </div>
           </div>
         );
 
       case 'email':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
               description={question.description}
             />
-            <div style={{ maxWidth: '400px' }}>
+            <div style={{ maxWidth: '360px' }}>
               <TextInput
                 value={value}
                 onChange={(v) => handleFieldChange(question.fieldName, v)}
@@ -230,19 +233,21 @@ export default function Home() {
                 error={error}
               />
             </div>
-            <OkButton onClick={handleNext} />
+            <div>
+              <OkButton onClick={handleNext} />
+            </div>
           </div>
         );
 
       case 'phone':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
               description={question.description}
             />
-            <div style={{ maxWidth: '400px' }}>
+            <div style={{ maxWidth: '360px' }}>
               <PhoneInput
                 value={value}
                 onChange={(v) => handleFieldChange(question.fieldName, v)}
@@ -251,20 +256,22 @@ export default function Home() {
                 error={error}
               />
             </div>
-            <OkButton onClick={handleNext} />
+            <div>
+              <OkButton onClick={handleNext} />
+            </div>
           </div>
         );
 
       case 'legal':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
               description={question.description}
               descriptionHasLink={question.descriptionHasLink}
             />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '256px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {question.options?.map((option) => (
                 <ChoiceButton
                   key={option.key}
@@ -276,13 +283,15 @@ export default function Home() {
               ))}
             </div>
             {error && (
-              <p style={{ color: '#F87171', fontSize: '14px' }}>{error}</p>
+              <p style={{ color: '#F87171', fontSize: '14px', margin: 0 }}>{error}</p>
             )}
-            <OkButton
-              onClick={handleSubmit}
-              label="See My Options"
-              disabled={isSubmitting || !value || value === "I don't accept"}
-            />
+            <div>
+              <OkButton
+                onClick={handleSubmit}
+                label="See My Options"
+                disabled={isSubmitting || !value || value === "I don't accept"}
+              />
+            </div>
           </div>
         );
 
@@ -294,14 +303,15 @@ export default function Home() {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        width: '100vw',
-        background: 'rgb(38, 38, 38)',
         position: 'relative',
+        height: '100vh',
+        width: '100vw',
+        overflow: 'hidden',
+        background: 'rgb(38, 38, 38)',
       }}
     >
-      {/* Progress bars at top */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10 }}>
+      {/* Progress bars - fixed at top */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
         <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
       </div>
 
@@ -313,32 +323,28 @@ export default function Home() {
         onChange={(e) => setHoneypot(e.target.value)}
         tabIndex={-1}
         autoComplete="off"
+        aria-hidden="true"
         style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
       />
 
-      {/* Main content */}
-      <main
+      {/* Main centered content */}
+      <div
         style={{
+          height: '100%',
+          width: '100%',
           display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100vh',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          paddingLeft: '80px',
+          paddingRight: '80px',
         }}
       >
-        <fieldset
-          style={{
-            border: 'none',
-            margin: 0,
-            padding: '59px 80px 88px',
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
+        <div style={{ maxWidth: '720px' }}>
           {renderQuestion(currentQuestion)}
-        </fieldset>
-      </main>
+        </div>
+      </div>
 
-      {/* Navigation buttons */}
+      {/* Navigation buttons - fixed at bottom right */}
       <NavButtons
         onPrev={handlePrev}
         onNext={handleNext}
