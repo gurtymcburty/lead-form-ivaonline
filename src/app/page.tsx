@@ -3,47 +3,100 @@
 import { useState, useCallback } from 'react';
 import { config, FormQuestion } from '@/lib/form-config';
 import FormProgress from '@/components/FormProgress';
-import MultipleChoice from '@/components/MultipleChoice';
-import PictureChoice from '@/components/PictureChoice';
+import QuestionHeader from '@/components/QuestionHeader';
+import ChoiceButton from '@/components/ChoiceButton';
+import ImageChoiceCard from '@/components/ImageChoiceCard';
 import TextInput from '@/components/TextInput';
-import EmailInput from '@/components/EmailInput';
 import PhoneInput from '@/components/PhoneInput';
-import LegalConsent from '@/components/LegalConsent';
+import OkButton from '@/components/OkButton';
+import NavButtons from '@/components/NavButtons';
 
 interface FormData {
-  [key: string]: string | boolean;
+  [key: string]: string;
 }
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-
-  // Honeypot field
+  const [error, setError] = useState('');
   const [honeypot, setHoneypot] = useState('');
 
-  const handleFieldChange = useCallback((fieldName: string, value: string | boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [fieldName]: value,
-    }));
+  const currentQuestion = config.questions[currentStep];
+  const firstName = formData['firstname'] || '';
+  const totalSteps = config.questions.length;
+
+  const handleFieldChange = useCallback((fieldName: string, value: string) => {
+    setFormData(prev => ({ ...prev, [fieldName]: value }));
+    setError('');
   }, []);
 
-  const handleNext = useCallback(() => {
-    if (currentStep < config.questions.length - 1) {
-      setCurrentStep(prev => prev + 1);
-    }
-  }, [currentStep]);
+  const validateCurrentStep = (): boolean => {
+    const q = currentQuestion;
+    const value = formData[q.fieldName];
 
-  const handleBack = useCallback(() => {
+    if (q.required && !value) {
+      setError('This field is required');
+      return false;
+    }
+
+    if (q.type === 'email' && value) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        setError('Please enter a valid email address');
+        return false;
+      }
+    }
+
+    if (q.type === 'phone' && value) {
+      const cleanPhone = value.replace(/[\s\-\(\)]/g, '');
+      if (cleanPhone.length < 10) {
+        setError('Please enter a valid UK phone number');
+        return false;
+      }
+    }
+
+    if (q.type === 'legal' && value === "I don't accept") {
+      setError('You must accept to continue');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleNext = useCallback(() => {
+    if (!validateCurrentStep()) return;
+
+    if (currentStep < totalSteps - 1) {
+      setCurrentStep(prev => prev + 1);
+      setError('');
+    }
+  }, [currentStep, totalSteps, formData, currentQuestion]);
+
+  const handlePrev = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
+      setError('');
     }
   }, [currentStep]);
 
+  const handleChoiceSelect = (value: string) => {
+    handleFieldChange(currentQuestion.fieldName, value);
+    // Auto-advance for choice questions (except legal)
+    if (currentQuestion.type !== 'legal') {
+      setTimeout(() => {
+        if (currentStep < totalSteps - 1) {
+          setCurrentStep(prev => prev + 1);
+          setError('');
+        }
+      }, 300);
+    }
+  };
+
   const handleSubmit = async () => {
-    // Check honeypot - if filled, silently "succeed" but don't submit
+    if (!validateCurrentStep()) return;
+
+    // Honeypot check
     if (honeypot) {
       setTimeout(() => {
         window.location.href = config.redirectUrl;
@@ -52,14 +105,11 @@ export default function Home() {
     }
 
     setIsSubmitting(true);
-    setSubmitError('');
 
     try {
       const response = await fetch('/api/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
@@ -69,87 +119,173 @@ export default function Home() {
         throw new Error(result.error || 'Submission failed');
       }
 
-      // Redirect on success
       window.location.href = config.redirectUrl;
-    } catch (error) {
-      console.error('Submit error:', error);
-      setSubmitError(error instanceof Error ? error.message : 'An error occurred. Please try again.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
       setIsSubmitting(false);
     }
   };
 
-  const currentQuestion = config.questions[currentStep];
-  const firstName = formData['firstname'] as string || '';
+  const getQuestionTitle = (q: FormQuestion): string => {
+    if (q.dynamicQuestion && firstName) {
+      return `${firstName}${q.question}`;
+    }
+    return q.question;
+  };
 
   const renderQuestion = (question: FormQuestion) => {
-    const value = formData[question.fieldName] as string || '';
-    const boolValue = formData[question.fieldName] as boolean || false;
+    const value = formData[question.fieldName] || '';
 
     switch (question.type) {
       case 'multiple-choice':
         return (
-          <MultipleChoice
-            question={question}
-            config={config}
-            value={value}
-            onChange={(val) => handleFieldChange(question.fieldName, val)}
-            onNext={handleNext}
-            firstName={firstName}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <QuestionHeader
+              questionNumber={currentStep + 1}
+              title={getQuestionTitle(question)}
+              description={question.description}
+            />
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '8px',
+                maxWidth: question.layout === 'horizontal' ? '600px' : '400px',
+              }}
+            >
+              {question.options?.map((option) => (
+                <ChoiceButton
+                  key={option.key}
+                  keyLabel={option.key}
+                  label={option.label}
+                  selected={value === option.label}
+                  onClick={() => handleChoiceSelect(option.label)}
+                />
+              ))}
+            </div>
+            <OkButton onClick={handleNext} />
+          </div>
         );
-      case 'picture-choice':
+
+      case 'image-choice':
         return (
-          <PictureChoice
-            question={question}
-            config={config}
-            value={value}
-            onChange={(val) => handleFieldChange(question.fieldName, val)}
-            onNext={handleNext}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <QuestionHeader
+              questionNumber={currentStep + 1}
+              title={getQuestionTitle(question)}
+              description={question.description}
+            />
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {question.options?.map((option) => (
+                <ImageChoiceCard
+                  key={option.key}
+                  keyLabel={option.key}
+                  label={option.label}
+                  imageSrc={option.image || ''}
+                  selected={value === option.label}
+                  onClick={() => handleChoiceSelect(option.label)}
+                />
+              ))}
+            </div>
+            <OkButton onClick={handleNext} />
+          </div>
         );
+
       case 'text':
         return (
-          <TextInput
-            question={question}
-            config={config}
-            value={value}
-            onChange={(val) => handleFieldChange(question.fieldName, val)}
-            onNext={handleNext}
-            firstName={firstName}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <QuestionHeader
+              questionNumber={currentStep + 1}
+              title={getQuestionTitle(question)}
+              description={question.description}
+            />
+            <div style={{ maxWidth: '400px' }}>
+              <TextInput
+                value={value}
+                onChange={(v) => handleFieldChange(question.fieldName, v)}
+                onSubmit={handleNext}
+                placeholder={question.placeholder}
+                error={error}
+              />
+            </div>
+            <OkButton onClick={handleNext} />
+          </div>
         );
+
       case 'email':
         return (
-          <EmailInput
-            question={question}
-            config={config}
-            value={value}
-            onChange={(val) => handleFieldChange(question.fieldName, val)}
-            onNext={handleNext}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <QuestionHeader
+              questionNumber={currentStep + 1}
+              title={getQuestionTitle(question)}
+              description={question.description}
+            />
+            <div style={{ maxWidth: '400px' }}>
+              <TextInput
+                value={value}
+                onChange={(v) => handleFieldChange(question.fieldName, v)}
+                onSubmit={handleNext}
+                placeholder={question.placeholder}
+                type="email"
+                error={error}
+              />
+            </div>
+            <OkButton onClick={handleNext} />
+          </div>
         );
+
       case 'phone':
         return (
-          <PhoneInput
-            question={question}
-            config={config}
-            value={value}
-            onChange={(val) => handleFieldChange(question.fieldName, val)}
-            onNext={handleNext}
-            firstName={firstName}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <QuestionHeader
+              questionNumber={currentStep + 1}
+              title={getQuestionTitle(question)}
+              description={question.description}
+            />
+            <div style={{ maxWidth: '400px' }}>
+              <PhoneInput
+                value={value}
+                onChange={(v) => handleFieldChange(question.fieldName, v)}
+                onSubmit={handleNext}
+                placeholder={question.placeholder}
+                error={error}
+              />
+            </div>
+            <OkButton onClick={handleNext} />
+          </div>
         );
+
       case 'legal':
         return (
-          <LegalConsent
-            question={question}
-            config={config}
-            value={boolValue}
-            onChange={(val) => handleFieldChange(question.fieldName, val)}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <QuestionHeader
+              questionNumber={currentStep + 1}
+              title={getQuestionTitle(question)}
+              description={question.description}
+              descriptionHasLink={question.descriptionHasLink}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '256px' }}>
+              {question.options?.map((option) => (
+                <ChoiceButton
+                  key={option.key}
+                  keyLabel={option.key}
+                  label={option.label}
+                  selected={value === option.label}
+                  onClick={() => handleFieldChange(question.fieldName, option.label)}
+                />
+              ))}
+            </div>
+            {error && (
+              <p style={{ color: '#F87171', fontSize: '14px' }}>{error}</p>
+            )}
+            <OkButton
+              onClick={handleSubmit}
+              label="See My Options"
+              disabled={isSubmitting || !value || value === "I don't accept"}
+            />
+          </div>
         );
+
       default:
         return null;
     }
@@ -157,19 +293,19 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen flex flex-col transition-colors duration-300"
-      style={{ backgroundColor: config.backgroundColor }}
+      style={{
+        minHeight: '100vh',
+        width: '100vw',
+        background: 'rgb(38, 38, 38)',
+        position: 'relative',
+      }}
     >
-      {/* Progress bar */}
-      <div className="fixed top-0 left-0 right-0 z-10 px-4 py-4">
-        <FormProgress
-          currentStep={currentStep}
-          totalSteps={config.questions.length}
-          config={config}
-        />
+      {/* Progress bars at top */}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10 }}>
+        <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
       </div>
 
-      {/* Honeypot field - hidden from users */}
+      {/* Honeypot */}
       <input
         type="text"
         name="website"
@@ -177,64 +313,38 @@ export default function Home() {
         onChange={(e) => setHoneypot(e.target.value)}
         tabIndex={-1}
         autoComplete="off"
-        style={{
-          position: 'absolute',
-          left: '-9999px',
-          opacity: 0,
-          height: 0,
-          width: 0,
-        }}
+        style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
       />
 
       {/* Main content */}
-      <main className="flex-1 flex items-center justify-center py-20">
-        <div className="w-full">
+      <main
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+        }}
+      >
+        <fieldset
+          style={{
+            border: 'none',
+            margin: 0,
+            padding: '59px 80px 88px',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           {renderQuestion(currentQuestion)}
-
-          {submitError && (
-            <div className="max-w-xl mx-auto px-4 mt-4">
-              <p className="text-center" style={{ color: config.errorColor }}>
-                {submitError}
-              </p>
-            </div>
-          )}
-        </div>
+        </fieldset>
       </main>
 
-      {/* Navigation */}
-      <div className="fixed bottom-6 right-6 flex gap-2">
-        {currentStep > 0 && (
-          <button
-            onClick={handleBack}
-            className="p-3 rounded-full transition-opacity hover:opacity-80"
-            style={{
-              backgroundColor: config.cardBackgroundColor,
-              color: config.textColor,
-              border: `1px solid ${config.borderColor}`,
-            }}
-            aria-label="Previous question"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-        )}
-        {currentStep < config.questions.length - 1 && currentQuestion.type !== 'multiple-choice' && currentQuestion.type !== 'picture-choice' && (
-          <button
-            onClick={handleNext}
-            className="p-3 rounded-full transition-opacity hover:opacity-80"
-            style={{
-              backgroundColor: config.primaryColor,
-              color: config.buttonTextColor,
-            }}
-            aria-label="Next question"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </button>
-        )}
-      </div>
+      {/* Navigation buttons */}
+      <NavButtons
+        onPrev={handlePrev}
+        onNext={handleNext}
+        showPrev={currentStep > 0}
+        showNext={currentStep < totalSteps - 1 && currentQuestion.type !== 'multiple-choice' && currentQuestion.type !== 'image-choice'}
+      />
     </div>
   );
 }

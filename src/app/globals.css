@@ -1,27 +1,72 @@
+@import url('https://font.typeform.com/dist/google/karla/index.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-dark: #262626;
+  --cream: #F1ECE2;
+  --muted-cream: #C8C4BC;
+  --gold: #8A764E;
+  --gold-light: #AD9D7F;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: rgb(38, 38, 38);
+  color: rgb(241, 236, 226);
+  font-family: 'Karla', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Hide scrollbar but allow scrolling */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+input::placeholder {
+  color: rgb(200, 196, 188);
+}
+
+input:focus {
+  outline: none;
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(241, 236, 226, 0.24);
+  border-radius: 4px;
+  background: rgba(38, 38, 38, 0.4);
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+  background: rgb(241, 236, 226);
+  border-color: rgb(241, 236, 226);
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓';
+  display: block;
+  text-align: center;
+  color: rgb(38, 38, 38);
+  font-size: 14px;
+  line-height: 18px;
 }

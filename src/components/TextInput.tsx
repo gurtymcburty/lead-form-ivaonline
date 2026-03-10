@@ -1,114 +1,95 @@
 'use client';
 
-import { useState } from 'react';
-import { SiteConfig, FormQuestion } from '@/lib/form-config';
+import { useState, useRef, useEffect } from 'react';
 
 interface TextInputProps {
-  question: FormQuestion;
-  config: SiteConfig;
   value: string;
   onChange: (value: string) => void;
-  onNext: () => void;
-  firstName?: string;
+  onSubmit: () => void;
+  placeholder?: string;
+  type?: 'text' | 'email';
+  error?: string;
 }
 
 export default function TextInput({
-  question,
-  config,
   value,
   onChange,
-  onNext,
-  firstName,
+  onSubmit,
+  placeholder = 'Type your answer here...',
+  type = 'text',
+  error,
 }: TextInputProps) {
-  const [error, setError] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!value.trim() && question.required) {
-      setError('This field is required');
-      return;
-    }
-    setError('');
-    onNext();
-  };
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      handleSubmit(e);
+      e.preventDefault();
+      onSubmit();
     }
   };
 
-  const questionText = question.dynamicQuestion && firstName
-    ? `${firstName}${question.question}`
-    : question.question;
-
   return (
-    <div className="w-full max-w-xl mx-auto px-4">
-      <form onSubmit={handleSubmit}>
-        <div className="mb-8">
-          <h1
-            className="text-2xl md:text-3xl font-medium mb-3"
-            style={{ color: config.textColor }}
-          >
-            {questionText}
-          </h1>
-          {question.description && (
-            <p
-              className="text-base"
-              style={{ color: config.secondaryTextColor }}
-            >
-              {question.description}
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-4">
-          <input
-            type="text"
-            value={value}
-            onChange={(e) => {
-              onChange(e.target.value);
-              if (error) setError('');
-            }}
-            onKeyDown={handleKeyDown}
-            placeholder={question.placeholder}
-            className="w-full p-4 text-lg rounded-lg border-2 outline-none transition-colors"
+    <div style={{ position: 'relative' }}>
+      <div
+        style={{
+          position: 'relative',
+          borderBottom: isFocused || value
+            ? '3px solid rgb(241, 236, 226)'
+            : '1px solid rgba(241, 236, 226, 0.2)',
+          transition: 'border-color 0.2s ease',
+        }}
+      >
+        <input
+          ref={inputRef}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder={placeholder}
+          style={{
+            width: '100%',
+            background: 'transparent',
+            border: 'none',
+            color: 'rgb(241, 236, 226)',
+            fontSize: '26px',
+            fontWeight: 400,
+            padding: '8px 0',
+            fontFamily: 'Karla, sans-serif',
+          }}
+        />
+        {/* Down chevron icon when focused */}
+        {isFocused && (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
             style={{
-              backgroundColor: config.cardBackgroundColor,
-              borderColor: error ? config.errorColor : config.borderColor,
-              color: config.textColor,
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = config.primaryColor;
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = error ? config.errorColor : config.borderColor;
-            }}
-            autoFocus
-          />
-
-          {error && (
-            <p className="text-sm" style={{ color: config.errorColor }}>
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            className="px-8 py-3 rounded-lg font-medium transition-opacity hover:opacity-90"
-            style={{
-              backgroundColor: config.primaryColor,
-              color: config.buttonTextColor,
+              position: 'absolute',
+              right: '0',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: 'rgb(241, 236, 226)',
             }}
           >
-            OK
-          </button>
-
-          <p className="text-sm" style={{ color: config.secondaryTextColor }}>
-            press <span className="font-medium">Enter ↵</span>
-          </p>
-        </div>
-      </form>
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        )}
+      </div>
+      {error && (
+        <p style={{ color: '#F87171', fontSize: '14px', marginTop: '8px' }}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }
