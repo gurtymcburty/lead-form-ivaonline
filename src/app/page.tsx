@@ -137,7 +137,7 @@ export default function Home() {
     switch (question.type) {
       case 'multiple-choice':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
@@ -148,6 +148,7 @@ export default function Home() {
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: '8px',
+                justifyContent: 'center',
               }}
             >
               {question.options?.map((option) => (
@@ -168,13 +169,13 @@ export default function Home() {
 
       case 'image-choice':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
               description={question.description}
             />
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
               {question.options?.map((option) => (
                 <ImageChoiceCard
                   key={option.key}
@@ -194,13 +195,13 @@ export default function Home() {
 
       case 'text':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
               description={question.description}
             />
-            <div style={{ maxWidth: '360px' }}>
+            <div style={{ width: '100%', maxWidth: '360px' }}>
               <TextInput
                 value={value}
                 onChange={(v) => handleFieldChange(question.fieldName, v)}
@@ -217,13 +218,13 @@ export default function Home() {
 
       case 'email':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
               description={question.description}
             />
-            <div style={{ maxWidth: '360px' }}>
+            <div style={{ width: '100%', maxWidth: '360px' }}>
               <TextInput
                 value={value}
                 onChange={(v) => handleFieldChange(question.fieldName, v)}
@@ -241,13 +242,13 @@ export default function Home() {
 
       case 'phone':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
               description={question.description}
             />
-            <div style={{ maxWidth: '360px' }}>
+            <div style={{ width: '100%', maxWidth: '360px' }}>
               <PhoneInput
                 value={value}
                 onChange={(v) => handleFieldChange(question.fieldName, v)}
@@ -264,14 +265,14 @@ export default function Home() {
 
       case 'legal':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center' }}>
             <QuestionHeader
               questionNumber={currentStep + 1}
               title={getQuestionTitle(question)}
               description={question.description}
               descriptionHasLink={question.descriptionHasLink}
             />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
               {question.options?.map((option) => (
                 <ChoiceButton
                   key={option.key}
@@ -334,12 +335,11 @@ export default function Home() {
           width: '100%',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'flex-start',
-          paddingLeft: '80px',
-          paddingRight: '80px',
+          justifyContent: 'center',
+          padding: '0 24px',
         }}
       >
-        <div style={{ maxWidth: '720px' }}>
+        <div style={{ maxWidth: '720px', width: '100%', textAlign: 'center' }}>
           {renderQuestion(currentQuestion)}
         </div>
       </div>
