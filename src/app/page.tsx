@@ -33,7 +33,7 @@ export default function Home() {
 
   const validateCurrentStep = (): boolean => {
     const q = currentQuestion;
-    const value = formData[q.fieldName];
+    const value = formData[q.fieldName]?.trim() || '';
 
     if (q.required && !value) {
       setError('This field is required');
@@ -64,21 +64,21 @@ export default function Home() {
     return true;
   };
 
-  const handleNext = useCallback(() => {
+  const handleNext = () => {
     if (!validateCurrentStep()) return;
 
     if (currentStep < totalSteps - 1) {
       setCurrentStep(prev => prev + 1);
       setError('');
     }
-  }, [currentStep, totalSteps]);
+  };
 
-  const handlePrev = useCallback(() => {
+  const handlePrev = () => {
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
       setError('');
     }
-  }, [currentStep]);
+  };
 
   const handleChoiceSelect = (value: string) => {
     handleFieldChange(currentQuestion.fieldName, value);

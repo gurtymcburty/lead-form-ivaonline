@@ -14,10 +14,10 @@ export default function NavButtons({ onPrev, onNext, showPrev, showNext }: NavBu
     <div
       style={{
         position: 'absolute',
-        bottom: '32px',
-        right: '32px',
+        bottom: '24px',
+        right: '24px',
         display: 'flex',
-        gap: '2px',
+        gap: '1px',
       }}
     >
       {showPrev && (
@@ -25,26 +25,26 @@ export default function NavButtons({ onPrev, onNext, showPrev, showNext }: NavBu
           type="button"
           onClick={onPrev}
           style={{
-            background: 'rgba(38, 38, 38, 0.6)',
-            boxShadow: 'rgba(241, 236, 226, 0.2) 0px 0px 0px 1px inset',
+            background: 'rgba(241, 236, 226, 0.1)',
             border: 'none',
-            borderRadius: '6px 2px 2px 6px',
-            width: '32px',
-            height: '32px',
+            borderRadius: showNext ? '4px 0 0 4px' : '4px',
+            width: '40px',
+            height: '40px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            transition: 'background 0.15s ease',
           }}
           aria-label="Previous question"
         >
           <svg
-            width="14"
-            height="14"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="rgb(138, 118, 78)"
-            strokeWidth="2.5"
+            stroke="rgb(241, 236, 226)"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
@@ -57,26 +57,26 @@ export default function NavButtons({ onPrev, onNext, showPrev, showNext }: NavBu
           type="button"
           onClick={onNext}
           style={{
-            background: 'rgba(38, 38, 38, 0.6)',
-            boxShadow: 'rgba(241, 236, 226, 0.2) 0px 0px 0px 1px inset',
+            background: 'rgba(241, 236, 226, 0.1)',
             border: 'none',
-            borderRadius: '2px 6px 6px 2px',
-            width: '32px',
-            height: '32px',
+            borderRadius: showPrev ? '0 4px 4px 0' : '4px',
+            width: '40px',
+            height: '40px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            transition: 'background 0.15s ease',
           }}
           aria-label="Next question"
         >
           <svg
-            width="14"
-            height="14"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="rgb(173, 157, 127)"
-            strokeWidth="2.5"
+            stroke="rgb(241, 236, 226)"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           >

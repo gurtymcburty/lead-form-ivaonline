@@ -32,8 +32,12 @@ body {
 }
 
 input::placeholder {
-  color: rgb(200, 196, 188);
+  color: rgba(241, 236, 226, 0.5);
   opacity: 1;
+}
+
+button:focus {
+  outline: none;
 }
 
 input:focus {

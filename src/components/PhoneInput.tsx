@@ -41,9 +41,8 @@ export default function PhoneInput({
           display: 'flex',
           alignItems: 'center',
           borderBottom: isFocused || value
-            ? '2px solid rgb(241, 236, 226)'
+            ? '1px solid rgb(241, 236, 226)'
             : '1px solid rgba(241, 236, 226, 0.3)',
-          paddingBottom: '4px',
           transition: 'border-color 0.2s ease',
         }}
       >
@@ -52,16 +51,15 @@ export default function PhoneInput({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '6px',
-            paddingRight: '16px',
-            fontSize: '24px',
+            gap: '4px',
+            paddingRight: '12px',
             color: 'rgb(241, 236, 226)',
             cursor: 'pointer',
             borderRight: '1px solid rgba(241, 236, 226, 0.2)',
             marginRight: '12px',
           }}
         >
-          <span style={{ fontSize: '20px' }}>🇬🇧</span>
+          <span style={{ fontSize: '24px' }}>🇬🇧</span>
           <svg
             width="10"
             height="10"
@@ -87,12 +85,13 @@ export default function PhoneInput({
             flex: 1,
             background: 'transparent',
             border: 'none',
+            outline: 'none',
             color: 'rgb(241, 236, 226)',
-            fontSize: '24px',
-            fontWeight: 400,
+            fontSize: '30px',
+            fontWeight: 300,
             padding: '8px 0',
             fontFamily: 'Karla, sans-serif',
-            lineHeight: 1.4,
+            lineHeight: 1.3,
           }}
         />
       </div>
@@ -100,7 +99,6 @@ export default function PhoneInput({
         <p style={{
           color: 'rgb(248, 113, 113)',
           fontSize: '14px',
-          marginTop: '12px',
           margin: '12px 0 0 0',
         }}>
           {error}

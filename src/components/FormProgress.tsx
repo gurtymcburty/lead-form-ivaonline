@@ -15,7 +15,9 @@ export default function FormProgress({ currentStep, totalSteps }: FormProgressPr
         style={{
           width: '100%',
           height: '4px',
-          background: 'rgba(241, 236, 226, 0.3)',
+          borderRadius: '4px',
+          overflow: 'hidden',
+          background: 'rgba(241, 236, 226, 0.56)',
         }}
       >
         <div
@@ -24,6 +26,7 @@ export default function FormProgress({ currentStep, totalSteps }: FormProgressPr
             width: `${progress}%`,
             background: 'rgb(241, 236, 226)',
             transition: 'width 0.3s ease-out',
+            borderRadius: '4px',
           }}
         />
       </div>

@@ -42,9 +42,8 @@ export default function TextInput({
         style={{
           position: 'relative',
           borderBottom: isFocused || value
-            ? '2px solid rgb(241, 236, 226)'
+            ? '1px solid rgb(241, 236, 226)'
             : '1px solid rgba(241, 236, 226, 0.3)',
-          paddingBottom: '4px',
           transition: 'border-color 0.2s ease',
         }}
       >
@@ -61,12 +60,13 @@ export default function TextInput({
             width: '100%',
             background: 'transparent',
             border: 'none',
+            outline: 'none',
             color: 'rgb(241, 236, 226)',
-            fontSize: '24px',
-            fontWeight: 400,
+            fontSize: '30px',
+            fontWeight: 300,
             padding: '8px 0',
             fontFamily: 'Karla, sans-serif',
-            lineHeight: 1.4,
+            lineHeight: 1.3,
           }}
         />
       </div>
@@ -74,7 +74,6 @@ export default function TextInput({
         <p style={{
           color: 'rgb(248, 113, 113)',
           fontSize: '14px',
-          marginTop: '12px',
           margin: '12px 0 0 0',
         }}>
           {error}
